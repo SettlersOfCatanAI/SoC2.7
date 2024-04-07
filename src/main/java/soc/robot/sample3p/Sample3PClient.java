@@ -28,6 +28,11 @@ import soc.util.CappedQueue;
 import soc.util.SOCFeatureSet;
 import soc.util.SOCRobotParameters;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+
+import java.net.Socket;
+
 /**
  * Sample of a trivially simple "third-party" subclass of {@link SOCRobotClient}
  * using {@link Sample3PBrain}. See that brain class's javadoc for what's different
@@ -79,6 +84,9 @@ public class Sample3PClient extends SOCRobotClient
 {
     /** Our class name, for {@link #rbclass}: {@code "soc.robot.sample3p.Sample3PClient"} */
     private static final String RBCLASSNAME_SAMPLE = Sample3PClient.class.getName();
+    private Socket servercon;
+    private DataInputStream serverin;
+    private DataOutputStream serverout;
 
     /**
      * Constructor for connecting to the specified server. Does not actually connect here:
@@ -93,6 +101,19 @@ public class Sample3PClient extends SOCRobotClient
         throws IllegalArgumentException
     {
         super(sci, nn, pw);
+        try{
+            servercon = new Socket("localhost", 2004);
+            servercon.setSoTimeout(300000);
+            serverin = new DataInputStream(servercon.getInputStream());
+            serverout = new DataOutputStream(servercon.getOutputStream());
+            serverout.writeUTF("Initial Client Connection OK.");
+            serverout.flush();
+            serverout.close();  
+            servercon.close();
+            }
+            catch(Exception e){
+                System.err.println("Initial Client Connection Failed.");
+             }
 
         rbclass = RBCLASSNAME_SAMPLE;
     }

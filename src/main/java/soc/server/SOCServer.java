@@ -8485,9 +8485,10 @@ public class SOCServer extends Server
         {
             // request third-party bots, if available and wanted
             final int reqPct3p = getConfigIntProperty(PROP_JSETTLERS_BOTS_PERCENT3P, 0);
-            if (reqPct3p > 0)
+            D.ebugPrintINFO("Requesting third-party bots for " + gaName + " at " + reqPct3p + "%");
+            if (reqPct3p > 0){
                 readyGameAskRobotsMix3p(ga, reqPct3p, robotsRequested, robotSeatsConns);
-
+            }
             // we know robotRequests isn't empty,
             // so add to the request table
             robotJoinRequests.put(gaName, robotsRequested);
