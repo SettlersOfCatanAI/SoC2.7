@@ -8484,7 +8484,7 @@ public class SOCServer extends Server
         if (robotsRequested != null)
         {
             // request third-party bots, if available and wanted
-            final int reqPct3p = getConfigIntProperty(PROP_JSETTLERS_BOTS_PERCENT3P, 0);
+            final int reqPct3p = getConfigIntProperty(PROP_JSETTLERS_BOTS_PERCENT3P, 25);
             D.ebugPrintINFO("Requesting third-party bots for " + gaName + " at " + reqPct3p + "%");
             if (reqPct3p > 0){
                 readyGameAskRobotsMix3p(ga, reqPct3p, robotsRequested, robotSeatsConns);

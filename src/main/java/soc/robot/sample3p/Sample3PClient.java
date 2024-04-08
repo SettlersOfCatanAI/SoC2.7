@@ -21,6 +21,7 @@ package soc.robot.sample3p;
 
 import soc.baseclient.ServerConnectInfo;
 import soc.game.SOCGame;
+import soc.message.SOCDeleteGame;
 import soc.message.SOCMessage;
 import soc.robot.SOCRobotBrain;
 import soc.robot.SOCRobotClient;
@@ -118,6 +119,73 @@ public class Sample3PClient extends SOCRobotClient
         rbclass = RBCLASSNAME_SAMPLE;
     }
 
+    @Override
+    protected void handleDELETEGAME(SOCDeleteGame mes)
+    {
+        try{
+            boolean isOver = false;
+            SOCGame ga = games.get(mes.getGame());
+            int my_place = 1;
+            if (ga != null)
+            {
+                if (ga.getGameState() == SOCGame.OVER)
+                {
+                    int my_score = ga.getPlayer(nickname).getTotalVP();
+                    for (int i = 0; i < 4; i++){
+                        if (ga.getPlayer(i).getPublicVP() > my_score){
+                            my_place += 1;
+                        }
+                        if (ga.getPlayer(i).getPublicVP() == 10){
+                            isOver = true;
+                        }
+                    }
+
+                }
+            }
+            String resultData = Integer.toString(my_place);
+            servercon = new Socket("localhost", 2004);
+            servercon.setSoTimeout(300000);
+            serverin = new DataInputStream(servercon.getInputStream());
+            serverout = new DataOutputStream(servercon.getOutputStream());
+            serverout.writeUTF("end|" + Boolean.toString(isOver) + "|" + resultData);
+            serverout.flush();
+            serverout.close();  
+            servercon.close();
+            }
+         catch(Exception e){
+            System.err.println("DeleteGame Handle Failed");
+            System.err.println(e);
+
+         }
+
+
+        //Run code from super()
+        SOCRobotBrain brain = robotBrains.get(mes.getGame());
+
+        if (brain != null)
+        {
+            SOCGame ga = games.get(mes.getGame());
+
+            if (ga != null)
+            {
+                if (ga.getGameState() == SOCGame.OVER)
+                {
+                    gamesFinished++;
+
+                    if (ga.getPlayer(nickname).getTotalVP() >= ga.vp_winner)
+                    {
+                        gamesWon++;
+                        // TODO: should check actual winning player number (getCurrentPlayerNumber?)
+                    }
+                }
+
+                brain.kill();
+                robotBrains.remove(mes.getGame());
+                brainQs.remove(mes.getGame());
+                games.remove(mes.getGame());
+            }
+        }
+    }
     /**
      * Build the set of optional client features this bot supports, to send to the server.
      * This sample client omits SOCScenario support ({@link SOCFeatureSet#CLIENT_SCENARIO_VERSION})
