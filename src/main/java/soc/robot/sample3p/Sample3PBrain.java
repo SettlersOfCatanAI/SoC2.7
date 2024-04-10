@@ -471,7 +471,7 @@ public class Sample3PBrain extends SOCRobotBrain
             msg += inputs[i] + ",";
         }
         msg += Integer.toString(inputs[125]);
-        int bestHex = 0;
+        int bestHexIndex = 0;
 
         D.ebugPrintlnINFO("%%% inputs = " + msg.toString());
 
@@ -483,7 +483,7 @@ public class Sample3PBrain extends SOCRobotBrain
             serverin = new DataInputStream(servercon.getInputStream());
             serverout = new DataOutputStream(servercon.getOutputStream());
             serverout.writeUTF(msg);
-            bestHex = serverin.readInt();
+            bestHexIndex = serverin.readInt();
             serverout.flush();
             serverout.close(); 
             serverin.close();   
@@ -494,9 +494,9 @@ public class Sample3PBrain extends SOCRobotBrain
             System.err.println("Whoops! Connection with server lost ... ");
         }
 
-        D.ebugPrintlnINFO("%%% bestHex = " + Integer.toHexString(bestHex));
+        D.ebugPrintlnINFO("%%% bestHex = " + Integer.toHexString(hexes[bestHexIndex]));
         D.ebugPrintlnINFO("!!! MOVING ROBBER !!!");
-        client.moveRobber(game, ourPlayerData, bestHex);
+        client.moveRobber(game, ourPlayerData, hexes[bestHexIndex]);
         pause(2000);
     }
 }
